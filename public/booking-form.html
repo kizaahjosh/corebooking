@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Travel & Tours Booking Form</title>
+
+    <!-- Font Awesome CDN for icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pVb6c+YkYswDY+CcMGOmRz+W0s8FyxB6tQVq9HMIuk2a9JdOaxQV3cLax5SFDI2Oba5yX5lOaHNKz5o6G/OS2w=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        form {
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 119, 182, 0.1);
+            border: 1px solid rgba(144, 224, 239, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0077b6;
+            margin-bottom: 30px;
+            font-weight: 700;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #023e8a;
+            font-size: 0.95rem;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="date"] {
+            width: 100%;
+            padding: 14px 45px 14px 16px;
+            border: 2px solid #90e0ef;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #03045e;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px dashed #90e0ef;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #03045e;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+            cursor: pointer;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #0077b6;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+        }
+
+        input[type="file"]:focus,
+        input[type="file"]:hover {
+            outline: none;
+            border-color: #0077b6;
+            background: #fff;
+            border-style: solid;
+        }
+
+        /* Icon styling */
+        .input-wrapper i {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            color: #0077b6;
+            font-size: 1.1rem;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* File input icons */
+        .form-group.file-group i {
+            position: absolute;
+            top: 50%;
+            right: 16px;
+            transform: translateY(-50%);
+            color: #0077b6;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, #0077b6 0%, #023e8a 100%);
+            color: #fff;
+            font-size: 1.1rem;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #023e8a 0%, #001d3d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 119, 182, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #messages {
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+            min-height: 30px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        #messages p {
+            margin: 5px 0;
+        }
+
+        /* Success message styling */
+        #messages[style*="green"] {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724 !important;
+        }
+
+        /* Error message styling */
+        #messages[style*="red"] {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24 !important;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            form {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            input[type="text"],
+            input[type="email"],
+            input[type="date"],
+            input[type="file"] {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+
+        @media (max-width: 480px) {
+            form {
+                padding: 25px 15px;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <form id="bookingForm" enctype="multipart/form-data" novalidate>
+        <h1><i class="fa-solid fa-plane-departure"></i> Book Your Tour</h1>
+
+        <div id="messages" style="color: red;"></div>
+
+        <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <div class="input-wrapper">
+                <input type="text" id="fullName" name="fullName" required />
+                <i class="fa-solid fa-user"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <div class="input-wrapper">
+                <input type="email" id="email" name="email" required />
+                <i class="fa-solid fa-envelope"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="tourPackage">Tour Package</label>
+            <div class="input-wrapper">
+                <input type="text" id="tourPackage" name="tourPackage" required />
+                <i class="fa-solid fa-suitcase-rolling"></i>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="travelDate">Travel Date</label>
+            <div class="input-wrapper">
+                <input type="date" id="travelDate" name="travelDate" required />
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+        </div>
+
+        <div class="form-group file-group">
+            <label for="visaFile">Visa Image (jpg, png)</label>
+            <input type="file" id="visaFile" name="visaFile" accept=".jpg,.jpeg,.png" required />
+            <i class="fa-solid fa-file-image"></i>
+        </div>
+
+        <div class="form-group file-group">
+            <label for="documentFile">Document File (pdf, doc, jpg, png)</label>
+            <input type="file" id="documentFile" name="documentFile" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
+            <i class="fa-solid fa-file"></i>
+        </div>
+
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i> Submit Booking</button>
+    </form>
+
+    <script>
+        document.getElementById('bookingForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.style.color = response.ok ? 'green' : 'red';
+
+                if (response.ok) {
+                    messagesDiv.textContent = data.message || 'Booking submitted successfully!';
+                    form.reset();
+                } else {
+                    messagesDiv.innerHTML = '';
+                    if (data.errors) {
+                        for (const [field, errors] of Object.entries(data.errors)) {
+                            errors.forEach(error => {
+                                const p = document.createElement('p');
+                                p.textContent = error;
+                                messagesDiv.appendChild(p);
+                            });
+                        }
+                    } else {
+                        messagesDiv.textContent = data.message || 'An error occurred.';
+                    }
+                }
+            } catch (error) {
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.style.color = 'red';
+                messagesDiv.textContent = 'Network error or server not responding.';
+            }
+        });
+    </script>
+</body>
+</html>
