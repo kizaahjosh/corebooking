@@ -291,7 +291,7 @@
             const formData = new FormData(form);
 
             try {
-                const response = await fetch('/api/bookings', {
+                const response = await fetch('/api/bookings/', {
                     method: 'POST',
                     body: formData,
                     headers: {

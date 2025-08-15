@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Management - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0077b6;
+            margin-bottom: 30px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0077b6;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .bookings-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 119, 182, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #0077b6;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fa-solid fa-chart-line"></i> Booking Management</h1>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalBookings">-</div>
+                <div class="stat-label">Total Bookings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="pendingBookings">-</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="confirmedBookings">-</div>
+                <div class="stat-label">Confirmed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedBookings">-</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div class="bookings-table">
+            <div class="table-header">
+                <h3><i class="fa-solid fa-list"></i> All Bookings</h3>
+                <button class="refresh-btn" onclick="loadBookings()">
+                    <i class="fa-solid fa-refresh"></i> Refresh
+                </button>
+            </div>
+            
+            <div id="tableContent">
+                <div class="loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Loading bookings...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let bookings = [];
+
+        async function loadBookings() {
+            try {
+                const response = await fetch('/api/bookings/');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    bookings = data.data || [];
+                    updateStats();
+                    renderTable();
+                } else {
+                    showError('Failed to load bookings: ' + data.message);
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        function updateStats() {
+            const total = bookings.length;
+            const pending = bookings.filter(b => b.status === 'pending').length;
+            const confirmed = bookings.filter(b => b.status === 'confirmed').length;
+            const completed = bookings.filter(b => b.status === 'completed').length;
+
+            document.getElementById('totalBookings').textContent = total;
+            document.getElementById('pendingBookings').textContent = pending;
+            document.getElementById('confirmedBookings').textContent = confirmed;
+            document.getElementById('completedBookings').textContent = completed;
+        }
+
+        function renderTable() {
+            const tableContent = document.getElementById('tableContent');
+            
+            if (bookings.length === 0) {
+                tableContent.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <h3>No bookings found</h3>
+                        <p>No bookings have been submitted yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Tour Package</th>
+                            <th>Travel Date</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${bookings.map(booking => `
+                            <tr>
+                                <td><strong>${booking.id}</strong></td>
+                                <td>
+                                    <div>${booking.fullName}</div>
+                                    <small style="color: #666;">${booking.email}</small>
+                                </td>
+                                <td>${booking.tourPackage}</td>
+                                <td>${new Date(booking.travelDate).toLocaleDateString()}</td>
+                                <td>
+                                    <span class="status-badge status-${booking.status}">
+                                        ${booking.status}
+                                    </span>
+                                </td>
+                                <td>${new Date(booking.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-view" onclick="viewBooking('${booking.id}')">
+                                            <i class="fa-solid fa-eye"></i> View
+                                        </button>
+                                        <button class="btn btn-delete" onclick="deleteBooking('${booking.id}')">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            tableContent.innerHTML = tableHTML;
+        }
+
+        async function viewBooking(id) {
+            try {
+                const response = await fetch(`/api/bookings/${id}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const booking = data.data;
+                    alert(`Booking Details:\n\nID: ${booking.id}\nName: ${booking.fullName}\nEmail: ${booking.email}\nTour: ${booking.tourPackage}\nDate: ${booking.travelDate}\nStatus: ${booking.status}\nCreated: ${new Date(booking.createdAt).toLocaleString()}`);
+                } else {
+                    alert('Failed to load booking details');
+                }
+            } catch (error) {
+                alert('Error loading booking: ' + error.message);
+            }
+        }
+
+        async function deleteBooking(id) {
+            if (!confirm('Are you sure you want to delete this booking? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/bookings/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Booking deleted successfully');
+                    loadBookings(); // Reload the list
+                } else {
+                    alert('Failed to delete booking: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error deleting booking: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('tableContent').innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle" style="color: #dc3545;"></i>
+                    <h3>Error</h3>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Load bookings when page loads
+        document.addEventListener('DOMContentLoaded', loadBookings);
+    </script>
+</body>
+</html>
